@@ -576,6 +576,7 @@ func (p *OAuthProxy) IsValidRedirect(redirect string) bool {
 	case strings.HasPrefix(redirect, "http://") || strings.HasPrefix(redirect, "https://"):
 		redirectURL, err := url.Parse(redirect)
 		if err != nil {
+			logger.Printf("Rejecting invalid redirect %s: scheme unsupported or missing", redirect)
 			return false
 		}
 		redirectHostname := redirectURL.Hostname()
@@ -600,8 +601,10 @@ func (p *OAuthProxy) IsValidRedirect(redirect string) bool {
 			}
 		}
 
+		logger.Printf("Rejecting invalid redirect %s: domain / port not in whitelist", redirect)
 		return false
 	default:
+		logger.Printf("Rejecting invalid redirect %s: not an absolute or relative URL", redirect)
 		return false
 	}
 }
